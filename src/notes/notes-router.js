@@ -10,3 +10,10 @@ const sanitizeNotes = notes => ({
     note_content: xss(notes.note_content),
     folder_id: notes.folder_id,
 })
+
+notesRouter
+    .route('')
+
+
+
+module.exports = notesRouter
