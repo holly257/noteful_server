@@ -29,6 +29,31 @@ function makeTestFoldersNoID() {
     ]
 }
 
+function makeTestNotesNoISO() {
+    return [
+        {
+            id: 1,
+            note_name: 'first note',
+            note_content: 'clean all the things',
+            folder_id: 1, 
+            date_mod: new Date()   
+        },
+        {
+            id: 2,
+            note_name: 'Second note',
+            note_content: 'clean things',
+            folder_id: 2, 
+            date_mod: new Date()   
+        },
+        {
+            id: 3,
+            note_name: 'third note',
+            note_content: 'tasks',
+            folder_id: 3, 
+            date_mod: new Date()
+        },
+    ]
+}
 
 function makeTestNotes() {
     return [
@@ -84,5 +109,6 @@ module.exports = {
     makeTestFolders,
     makeTestFoldersNoID,
     makeTestNotes,
-    makeTestNotesNoID
+    makeTestNotesNoID,
+    makeTestNotesNoISO
 }

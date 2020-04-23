@@ -1,11 +1,11 @@
 const NotesService = require('../src/notes/notes-service')
 const knex = require('knex')
-const { makeTestFolders, makeTestNotes } = require('./makeTestData')
+const { makeTestFolders, makeTestNotesNoISO } = require('./makeTestData')
 
 describe('Notes Service object', function() {
     let db
     let testFolders = makeTestFolders()
-    let testNotes = makeTestNotes()
+    let testNotes = makeTestNotesNoISO()
 
     before('make db instance', () => {
         db = knex({
