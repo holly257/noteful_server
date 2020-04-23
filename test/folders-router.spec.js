@@ -39,22 +39,49 @@ describe('folders-router Endpoints', function() {
                     .expect(200, expectedFolder)
             })
         })
-
+        
         
     })
+    //also test for post with data but no IDs
+
     context('Given there are no folders in the database', () => {
-        it('GET api/folders responds with 200 and an empty list', () => {
-            return supertest(app)
-                .get('/api/folders')
-                .expect(200, [])
-        })
-        it('GET /api/folders/:id responds with 404', () => {
-                const folderId = 2452
+        context('GET api/folders', () => {
+            it('responds with 200 and an empty list', () => {
                 return supertest(app)
-                    .get(`/api/folders/${folderId}`)
-                    .expect(404, {
-                        error: { message: `Folder does not exist`}
+                    .get('/api/folders')
+                    .expect(200, [])
+            })
+            it('/:id responds with 404', () => {
+                    const folderId = 2452
+                    return supertest(app)
+                        .get(`/api/folders/${folderId}`)
+                        .expect(404, {
+                            error: { message: `Folder does not exist`}
+                        })
+            })
+        })
+    
+        
+        context('POST /api/folders', () => {
+            it('creates a folder, responding with 201 and the new folder', () => {
+                const newFolder = {
+                    folder_name: 'hello'
+                }
+                return supertest(app)
+                    .post('/api/folders')
+                    .send(newFolder)
+                    .expect(201)
+                    .expect(res => {
+                        expect(res.body.folder_name).to.eql(newFolder.folder_name)
+                        expect(res.body).to.have.property('id')
+                        expect(res.headers.location).to.eql(`/api/folders/${res.body.id}`)
                     })
+                    .then(postRes =>
+                        supertest(app)
+                            .get(`/api/folders/${postRes.body.id}`)
+                            .expect(postRes.body)    
+                    )
+            })
         })
     })
 })

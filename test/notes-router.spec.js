@@ -6,7 +6,7 @@ const { makeTestNotes, makeTestFolders } = require('./makeTestData')
 
 //take out .only
 
-describe.only('notes-router Endpoints', function() {
+describe('notes-router Endpoints', function() {
     let db
     const testFolders = makeTestFolders()
     const testNotes = makeTestNotes()
@@ -32,16 +32,22 @@ describe.only('notes-router Endpoints', function() {
             return db.into('notes').insert(testNotes)
         })
 
-        context('GET /api/notes', () => {
+        //both giving error with date formatting
+        context.only('GET /api/notes', () => {
             it('responds with 200 and all of the notes', () => {
                 return supertest(app)
                     .get('/api/notes')
                     .expect(200, testNotes)
             })
-            it('/:id responds with 200 and the epected note', () => {
-                
+            it('/:id responds with 200 and the requested note', () => {
+                const noteID = 1
+                const expectedNote = testNotes[noteID - 1]
+                return supertest(app)
+                    .get(`/api/notes/${noteID}`)
+                    .expect(200, expectedNote)
             })
         })
+        
     })
 
     context('Given there are no notes in the database', () => {

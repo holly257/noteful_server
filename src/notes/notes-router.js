@@ -34,13 +34,7 @@ notesRouter
                         error: { message: `Note does not exist`}
                     })
                 }
-                res.json({
-                    id: notes.id,
-                    note_name: notes.note_name,
-                    note_content: notes.note_content,
-                    folder_id: notes.folder_id,
-                    date_mod: new Date(notes.date_mod),
-                })
+                res.json(notes)
             })
             .catch(next)
     })

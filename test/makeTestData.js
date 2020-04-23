@@ -37,21 +37,21 @@ function makeTestNotes() {
             note_name: 'first note',
             note_content: 'clean all the things',
             folder_id: 1, 
-            date_mod: new Date()   
+            date_mod: new Date().toISOString()   
         },
         {
             id: 2,
             note_name: 'Second note',
             note_content: 'clean things',
             folder_id: 2, 
-            date_mod: new Date()   
+            date_mod: new Date().toISOString()   
         },
         {
             id: 3,
             note_name: 'third note',
             note_content: 'tasks',
             folder_id: 3, 
-            date_mod: new Date() 
+            date_mod: new Date().toISOString()
         },
     ]
 }
@@ -62,19 +62,19 @@ function makeTestNotesNoID() {
             note_name: 'first note',
             note_content: 'clean all the things',
             folder_id: 1, 
-            date_mod: new Date()   
+            date_mod: new Date().toISOString()   
         },
         {
             note_name: 'Second note',
             note_content: 'clean things',
             folder_id: 2, 
-            date_mod: new Date()   
+            date_mod: new Date().toISOString()   
         },
         {
             note_name: 'third note',
             note_content: 'tasks',
             folder_id: 3, 
-            date_mod: new Date() 
+            date_mod: new Date().toISOString()
         },
     ]
 }
