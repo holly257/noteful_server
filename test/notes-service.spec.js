@@ -7,7 +7,7 @@ describe('Notes Service object', function() {
     let testFolders = makeTestFolders()
     let testNotes = makeTestNotes()
 
-    before(() => {
+    before('make db instance', () => {
         db = knex({
             client: 'pg',
             connection: process.env.TEST_DB_URL,

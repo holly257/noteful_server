@@ -6,7 +6,7 @@ describe('Folders Service object', function() {
     let db
     let testFolders = makeTestFolders()
 
-    before(() => {
+    before('make db instance', () => {
         db = knex({
             client: 'pg',
             connection: process.env.TEST_DB_URL,
