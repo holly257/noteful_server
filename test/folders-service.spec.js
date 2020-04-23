@@ -1,22 +1,10 @@
 const FoldersService = require('../src/folders/folders-service')
 const knex = require('knex')
+const { makeTestFolders } = require('./makeTestData')
 
 describe('Folders Service object', function() {
     let db
-    let testFolders = [
-        {
-            id: 1,
-            folder_name: 'first folder'    
-        },
-        {
-            id: 2,
-            folder_name: 'Second folder'    
-        },
-        {
-            id: 3,
-            folder_name: 'third folder'    
-        },
-    ]
+    let testFolders = makeTestFolders()
 
     before(() => {
         db = knex({

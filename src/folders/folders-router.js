@@ -8,3 +8,14 @@ const jsonParser = express.json()
 const sanitizeFolders = folders => ({
     folder_name: xss(folders.folder_name),
 })
+
+foldersRouter
+    .route('/')
+    .get((req, res, next) => {
+        const db = req.app.get('db')
+        FoldersService.getAllFolders(db)
+            .then(folders => {
+                res.json(folders)
+            })
+            .catch(next)
+    })
