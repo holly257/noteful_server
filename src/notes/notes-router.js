@@ -21,6 +21,19 @@ notesRouter
             })
             .catch(next)
     })
+    .post(jsonParser, (req, res, next) => {
+        const db = req.app.get('db')
+        const { note_name, note_content, folder_id, date_mod } = req.body
+        const newNote = { note_name, note_content, folder_id, date_mod }
+        NotesService.insertNote(db, newNote)
+            .then(note => {
+                res
+                    .status(201)
+                    .location(`/api/notes/${note.id}`)
+                    .json(note)
+            })
+        .catch(next)
+    })
 
 
 notesRouter

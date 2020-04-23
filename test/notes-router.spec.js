@@ -64,5 +64,35 @@ describe('notes-router Endpoints', function() {
                     error: { message: `Note does not exist`}
                 })
         })
+        context('POST /api/notes', () => {
+            it('creates a note, responding with 201 and the new note', () => {
+                this.retries(3)
+                const newNote = {
+                    note_name: 'a note',
+                    note_content: 'clean some things',
+                    folder_id: 2, 
+                    date_mod: new Date()
+                }
+                return supertest(app)
+                    .post('/api/notes')
+                    .send(newNote)
+                    .expect(201)
+                    .expect(res => {
+                        expect(res.body.note_name).to.eql(newNote.note_name)
+                        expect(res.body.note_content).to.eql(newNote.note_content)
+                        expect(res.body.folder_id).to.eql(newNote.folder_id)
+                        expect(res.body).to.have.property('id')
+                        expect(res.headers.location).to.eql(`/api/notes/${res.body.id}`)
+                        const expected = new Date().toLocaleString()
+                        const actual = new Date(res.body.date_mod).toLocaleString()
+                        expect(actual).to.eql(expected)
+                    })
+                    .then(postRes => 
+                        supertest(app)
+                            .get(`/api/notes/${postRes.body.id}`)
+                            .expect(postRes.body)    
+                    )
+            })
+        })
     })
 })
