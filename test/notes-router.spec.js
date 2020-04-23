@@ -33,7 +33,7 @@ describe('notes-router Endpoints', function() {
         })
 
         //both giving error with date formatting
-        context.only('GET /api/notes', () => {
+        context('GET /api/notes', () => {
             it('responds with 200 and all of the notes', () => {
                 return supertest(app)
                     .get('/api/notes')

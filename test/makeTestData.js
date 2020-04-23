@@ -62,19 +62,19 @@ function makeTestNotesNoID() {
             note_name: 'first note',
             note_content: 'clean all the things',
             folder_id: 1, 
-            date_mod: new Date().toISOString()   
+            date_mod: new Date() 
         },
         {
             note_name: 'Second note',
             note_content: 'clean things',
             folder_id: 2, 
-            date_mod: new Date().toISOString()   
+            date_mod: new Date()   
         },
         {
             note_name: 'third note',
             note_content: 'tasks',
             folder_id: 3, 
-            date_mod: new Date().toISOString()
+            date_mod: new Date()
         },
     ]
 }
