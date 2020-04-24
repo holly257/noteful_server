@@ -51,6 +51,36 @@ describe('folders-router Endpoints', function() {
                         .expect(expectedFolders)    
                 )
         })
+        context.only('PATCH /api/folders/:id', () => {
+            it('responds with 204 and updates the folder', () => {
+                const folderID = 2
+                const updatedFolder = {
+                    folder_name: 'a whole new name'
+                }
+                const expectedFolder = {
+                    ...testFolders[folderID - 1],
+                    ...updatedFolder
+                }
+                return supertest(app)
+                    .patch(`/api/folders/${folderID}`)
+                    .send(updatedFolder)
+                    .expect(204)
+                    .then(res => 
+                        supertest(app)
+                            .get(`/api/folders/${folderID}`)
+                            .expect(expectedFolder)    
+                    )
+            })
+            it('responds with 400 when no required fields are given', () => {
+                const idToUpdate = 3
+                return supertest(app)
+                    .patch(`/api/folders/${idToUpdate}`)
+                    .send({ irrelevant: 'thing' })
+                    .expect(400, {
+                        error: { message: `Request body must contain folder_name`}
+                    })
+            })
+        })
         context('Given an XSS attack folder', () => {
             const { maliciousFolder, expectedFolder } = makeMaliciousFolder()
             beforeEach('insert malicious folder', () => {
@@ -141,6 +171,14 @@ describe('folders-router Endpoints', function() {
                 .expect(404, 
                     { error: { message: 'Folder does not exist'}}
                 )
+        })
+        it('PATCH /api/folders/:id responds with 404', () => {
+            const folderID = 2
+            return supertest(app)
+                .patch(`/api/folders/${folderID}`)
+                .expect(404, {
+                    error: { message: 'Folder does not exist'}
+                })
         })
     })
 })

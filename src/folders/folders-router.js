@@ -69,5 +69,23 @@ foldersRouter
             })
         .catch(next)
     })
+    .patch(jsonParser, (req, res, next) => {
+        const db = req.app.get('db')
+        const id = req.params.id
+        const { folder_name } = req.body
+        const folderToUpdate = { folder_name }
+
+        if(!folder_name) {
+            return res.status(400).json({
+                error: { message: `Request body must contain folder_name`}
+            })
+        }
+
+        FoldersService.updateFolder(db, id, folderToUpdate)
+            .then(rows => {
+                res.status(204).end()
+            })
+        .catch(next)
+    })
 
 module.exports = foldersRouter

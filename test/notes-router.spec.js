@@ -58,6 +58,62 @@ describe('notes-router Endpoints', function() {
                         .expect(expectedNotes)
                 )
         })
+        context('PATCH /api/notes', () => {
+            it(':id responds with 204 and updates the note', () => {
+                const noteID = 2
+                const updatedNote = {
+                    note_name: 'some note',
+                    note_content: 'clean things',
+                    folder_id: 2, 
+                    date_mod: new Date().toISOString() 
+                }
+                const expectedNote = {
+                    ...testNotes[noteID - 1],
+                    ...updatedNote
+                }
+                return supertest(app)
+                    .patch(`/api/notes/${noteID}`)
+                    .send(updatedNote)
+                    .expect(204)
+                    .then(res =>
+                        supertest(app)
+                            .get(`/api/notes/${noteID}`)
+                            .expect(expectedNote)
+                    )
+            })
+            it('responds with 400 when no required fields are given', () => {
+                const idToUpdate = 2
+                return supertest(app)
+                    .patch(`/api/notes/${idToUpdate}`)
+                    .send({ irrelevant: 'thing' })
+                    .expect(400, {
+                        error: { message: 'Request body must contain note_name and note_content'}
+                    })
+            })
+            it('responds with 204 when updating only a subset of fields', () => {
+                const idToUpdate = 1
+                const updatedNote = {
+                    note_content: 'fun new content'
+                }
+                const expectedNote = {
+                    ...testNotes[idToUpdate - 1],
+                    ...updatedNote
+                }
+                return supertest(app)
+                    .patch(`/api/notes/${idToUpdate}`)
+                    .send({
+                        ...updatedNote,
+                        randomField: 'shoudl not be in GET'
+                    })
+                    .expect(204)
+                    .then(res => 
+                        supertest(app)
+                            .get(`/api/notes/${idToUpdate}`)
+                            .expect(expectedNote)    
+                    )
+            })
+        })
+        
         context('Given an XSS attack note', () => {
             const { maliciousNote, expectedNote } = makeMaliciousNote()
             beforeEach('insert malicious note', () => {
@@ -139,14 +195,39 @@ describe('notes-router Endpoints', function() {
                         expect(res.body.note_content).to.eql(expectedNote.note_content)
                     })
             })
-            it('DELETE /api/notes/:id responds with 404', () => {
-                const idToDel = 2
-                return supertest(app)
-                    .delete(`/api/notes/${idToDel}`)
-                    .expect(404, 
-                        { error: { message: 'Note does not exist'}}    
-                    )
+            const requiredFields = ['note_name', 'note_content']
+            requiredFields.forEach(field => {
+                const reqNewNote = {
+                    note_name: 'something',
+                    note_content: 'other', 
+                    folder_id: 2
+                }
+                it(`responds with 400 and an error when the '${field}' is missing`, () => {
+                    delete reqNewNote[field]
+                    return supertest(app)
+                        .post('/api/notes')
+                        .send(reqNewNote)
+                        .expect(400, {
+                            error: { message: `Missing ${field} in request body`}
+                        })
+                })
             })
+        })
+        it('DELETE /api/notes/:id responds with 404', () => {
+            const idToDel = 2
+            return supertest(app)
+                .delete(`/api/notes/${idToDel}`)
+                .expect(404, 
+                    { error: { message: 'Note does not exist'}}    
+                )
+        })
+        it('PATCH /api/notes/:id responds with 404', () => {
+            const noteID = 2
+            return supertest(app)
+                .patch(`/api/notes/${noteID}`)
+                .expect(404, {
+                    error: { message: `Note does not exist`}
+                })
         })
     })
 })
