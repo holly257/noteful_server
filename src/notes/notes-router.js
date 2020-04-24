@@ -6,9 +6,11 @@ const notesRouter = express.Router()
 const jsonParser = express.json()
 
 const sanitizeNotes = notes => ({
+    id: notes.id,
     note_name: xss(notes.note_name),
     note_content: xss(notes.note_content),
     folder_id: notes.folder_id,
+    date_mod: notes.date_mod
 })
 
 notesRouter
@@ -17,7 +19,7 @@ notesRouter
         const db = req.app.get('db')
         NotesService.getAllNotes(db)
             .then(notes => {
-                res.json(notes)
+                res.json(notes.map(sanitizeNotes))
             })
             .catch(next)
     })
@@ -25,12 +27,15 @@ notesRouter
         const db = req.app.get('db')
         const { note_name, note_content, folder_id, date_mod } = req.body
         const newNote = { note_name, note_content, folder_id, date_mod }
+        
+        // if(!)
+        
         NotesService.insertNote(db, newNote)
             .then(note => {
                 res
                     .status(201)
                     .location(`/api/notes/${note.id}`)
-                    .json(note)
+                    .json(sanitizeNotes(note))
             })
         .catch(next)
     })
@@ -38,7 +43,7 @@ notesRouter
 
 notesRouter
     .route('/:id')
-    .get((req, res, next) => {
+    .all((req, res, next) => {
         const db = req.app.get('db')
         NotesService.getById(db, req.params.id)
             .then(notes => {
@@ -47,9 +52,13 @@ notesRouter
                         error: { message: `Note does not exist`}
                     })
                 }
-                res.json(notes)
+                res.notes = notes
+                next()
             })
             .catch(next)
+    })
+    .get((req, res, next) => {
+        res.json(sanitizeNotes(res.notes))
     })
 
 

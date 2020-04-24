@@ -104,11 +104,45 @@ function makeTestNotesNoID() {
     ]
 }
 
+function makeMaliciousFolder() {
+    const maliciousFolder = {
+        id: 911,
+        folder_name: 'Naughty naughty very naughty <script>alert("xss");</script>',
+    }
+    const expectedFolder = {
+        ...maliciousFolder,
+        folder_name: 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
+    }
+    return {
+        maliciousFolder,
+        expectedFolder
+    }
+}
+
+function makeMaliciousNote() {
+    const maliciousNote = {
+        id: 911,
+        note_name: 'Naughty naughty very naughty <script>alert("xss");</script>',
+        note_content: `Bad image <img src="https://url.to.file.which/does-not.exist" onerror="alert(document.cookie);">. But not <strong>all</strong> bad.`,
+        folder_id: 1
+    }
+    const expectedNote = {
+        ...maliciousNote,
+        note_name: 'Naughty naughty very naughty &lt;script&gt;alert(\"xss\");&lt;/script&gt;',
+        note_content: `Bad image <img src="https://url.to.file.which/does-not.exist">. But not <strong>all</strong> bad.`
+    }
+    return {
+        maliciousNote,
+        expectedNote
+    }
+}
 
 module.exports = {
     makeTestFolders,
     makeTestFoldersNoID,
     makeTestNotes,
     makeTestNotesNoID,
-    makeTestNotesNoISO
+    makeTestNotesNoISO,
+    makeMaliciousFolder,
+    makeMaliciousNote
 }

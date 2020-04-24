@@ -6,6 +6,7 @@ const foldersRouter = express.Router()
 const jsonParser = express.json()
 
 const sanitizeFolders = folders => ({
+    id: folders.id,
     folder_name: xss(folders.folder_name),
 })
 
@@ -15,7 +16,7 @@ foldersRouter
         const db = req.app.get('db')
         FoldersService.getAllFolders(db)
             .then(folders => {
-                res.json(folders)
+                res.json(folders.map(sanitizeFolders))
             })
             .catch(next)
     })
@@ -23,19 +24,26 @@ foldersRouter
         const { folder_name } = req.body
         const newFolder = { folder_name }
         const db = req.app.get('db')
+
+        if(!folder_name) {
+            return res.status(400).json({
+                error: { message: `Folder name is required`}
+            })
+        }
+
         FoldersService.insertFolder(db, newFolder)
             .then(folder => {
                 res
                     .status(201)
                     .location(`/api/folders/${folder.id}`)
-                    .json(folder)
+                    .json(sanitizeFolders(folder))
             })
         .catch(next)
     })
 
 foldersRouter
     .route('/:id')
-    .get((req, res, next) => {
+    .all((req, res, next) => {
         const db = req.app.get('db')
         FoldersService.getById(db, req.params.id)
             .then(folders => {
@@ -44,9 +52,22 @@ foldersRouter
                         error: { message: `Folder does not exist`}
                     })
                 }
-                res.json(folders)
+                res.folders = folders
+                next()
             })
             .catch(next)
+    })
+    .get((req, res, next) => {
+        res.json(sanitizeFolders(res.folders))
+    })
+    .delete((req, res, next) => {
+        const db = req.app.get('db')
+        const id = req.body
+        FoldersService.deleteFolder(db, id)
+            .then(() => {
+                res.status(204).end()
+            })
+        .catch(next)
     })
 
 module.exports = foldersRouter

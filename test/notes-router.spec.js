@@ -2,11 +2,11 @@ const { expect } = require('chai')
 const knex = require('knex')
 const app = require('../src/app')
 const NotesRouter = require('../src/notes/notes-router')
-const { makeTestNotes, makeTestFolders } = require('./makeTestData')
+const { makeTestNotes, makeTestFolders, makeMaliciousNote } = require('./makeTestData')
 
 //take out .only
 
-describe('notes-router Endpoints', function() {
+describe.only('notes-router Endpoints', function() {
     let db
     const testFolders = makeTestFolders()
     const testNotes = makeTestNotes()
@@ -47,8 +47,32 @@ describe('notes-router Endpoints', function() {
                     .expect(200, expectedNote)
             })
         })
-        
+        context('Given an XSS attack note', () => {
+            const { maliciousNote, expectedNote } = makeMaliciousNote()
+            beforeEach('insert malicious note', () => {
+                return db.into('notes').insert([ maliciousNote ])
+            })
+            it('GET /api/notes removes XSS attack content', () => {
+                return supertest(app)
+                    .get('/api/notes')
+                    .expect(200)
+                    .expect(res => {
+                        expect(res.body[3].note_name).to.eql(expectedNote.note_name)
+                        expect(res.body[3].note_content).to.eql(expectedNote.note_content)
+                    })
+            })
+            it('GET /api/notes/:id removes XSS attack content', () => {
+                return supertest(app)
+                    .get(`/api/notes/${maliciousNote.id}`)
+                    .expect(200)
+                    .expect(res => {
+                        expect(res.body.note_name).to.eql(expectedNote.note_name)
+                        expect(res.body.note_content).to.eql(expectedNote.note_content)
+                    })
+            })
+        })
     })
+
 
     context('Given there are no notes in the database', () => {
         it('GET /api/notes/ responds with 200 and an empty array', () => {
@@ -91,6 +115,25 @@ describe('notes-router Endpoints', function() {
                         supertest(app)
                             .get(`/api/notes/${postRes.body.id}`)
                             .expect(postRes.body)    
+                    )
+            })
+            it('removes XSS attack content', () => {
+                const { maliciousNote,expectedNote } = makeMaliciousNote()
+                return supertest(app)
+                    .post('/api/notes')
+                    .send(maliciousNote)
+                    .expect(201)
+                    .expect(res => {
+                        expect(res.body.note_name).to.eql(expectedNote.note_name)
+                        expect(res.body.note_content).to.eql(expectedNote.note_content)
+                    })
+            })
+            it('DELETE /api/notes/:id responds with 404', () => {
+                const idToDel = 2
+                return supertest(app)
+                    .delete(`/api/notes/${idToDel}`)
+                    .expect(404, 
+                        { error: { message: 'Note does not exist'}}    
                     )
             })
         })
