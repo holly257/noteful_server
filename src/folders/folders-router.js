@@ -35,7 +35,7 @@ foldersRouter
             .then(folder => {
                 res
                     .status(201)
-                    .location(`/api/folders/${folder.id}`)
+                    .location(path.posix.join(req.originalUrl, `/${folder.id}`))
                     .json(sanitizeFolders(folder))
             })
         .catch(next)
