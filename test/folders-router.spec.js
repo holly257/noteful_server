@@ -51,7 +51,7 @@ describe('folders-router Endpoints', function() {
                         .expect(expectedFolders)    
                 )
         })
-        context.only('PATCH /api/folders/:id', () => {
+        context('PATCH /api/folders/:id', () => {
             it('responds with 204 and updates the folder', () => {
                 const folderID = 2
                 const updatedFolder = {
