@@ -7,10 +7,10 @@ const jsonParser = express.json()
 
 const sanitizeNotes = notes => ({
     id: notes.id,
-    note_name: xss(notes.note_name),
-    note_content: xss(notes.note_content),
-    folder_id: notes.folder_id,
-    date_mod: notes.date_mod
+    name: xss(notes.note_name),
+    content: xss(notes.note_content),
+    folderId: notes.folder_id,
+    modified: notes.date_mod
 })
 
 notesRouter
@@ -25,9 +25,9 @@ notesRouter
     })
     .post(jsonParser, (req, res, next) => {
         const db = req.app.get('db')
-        const { note_name, note_content, folder_id, date_mod } = req.body
-        const required = { note_name, note_content, folder_id}  
-        const newNote = { note_name, note_content, folder_id, date_mod }
+        const { name, content, folderId, modified } = req.body
+        const required = { note_name: name, note_content: content, folder_id: folderId}  
+        const newNote = { note_name: name, note_content: content, folder_id: folderId, date_mod: modified }
 
         for(const [key, value] of Object.entries(required)) {
             if (value ==  null) {

@@ -7,7 +7,7 @@ const jsonParser = express.json()
 
 const sanitizeFolders = folders => ({
     id: folders.id,
-    folder_name: xss(folders.folder_name),
+    name: xss(folders.folder_name),
 })
 
 foldersRouter
@@ -21,11 +21,11 @@ foldersRouter
             .catch(next)
     })
     .post(jsonParser, (req, res, next) => {
-        const { folder_name } = req.body
-        const newFolder = { folder_name }
+        const { name } = req.body
+        const newFolder = { folder_name: name }
         const db = req.app.get('db')
 
-        if(!folder_name) {
+        if(!name) {
             return res.status(400).json({
                 error: { message: `Folder name is required`}
             })
