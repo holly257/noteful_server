@@ -6,7 +6,7 @@ const { makeTestNotes, makeTestFolders, makeMaliciousNote } = require('./makeTes
 
 //take out .only
 
-describe.only('notes-router Endpoints', function() {
+describe('notes-router Endpoints', function() {
     let db
     const testFolders = makeTestFolders()
     const testNotes = makeTestNotes()
@@ -32,7 +32,6 @@ describe.only('notes-router Endpoints', function() {
             return db.into('notes').insert(testNotes)
         })
 
-        //both giving error with date formatting
         context('GET /api/notes', () => {
             it('responds with 200 and all of the notes', () => {
                 return supertest(app)
@@ -46,6 +45,18 @@ describe.only('notes-router Endpoints', function() {
                     .get(`/api/notes/${noteID}`)
                     .expect(200, expectedNote)
             })
+        })
+        it('DELETE /api/notes/:id responds with 204 and removes the note', () => {
+            const idToDel = 2
+            const expectedNotes = testNotes.filter(note => note.id !== idToDel)
+            return supertest(app)
+                .delete(`/api/notes/${idToDel}`)
+                .expect(204)
+                .then(res => 
+                    supertest(app)
+                        .get('/api/notes')
+                        .expect(expectedNotes)
+                )
         })
         context('Given an XSS attack note', () => {
             const { maliciousNote, expectedNote } = makeMaliciousNote()

@@ -60,7 +60,15 @@ notesRouter
     .get((req, res, next) => {
         res.json(sanitizeNotes(res.notes))
     })
-
+    .delete((req, res, next) => {
+        const db = req.app.get('db')
+        const id = req.params.id
+        NotesService.deleteNote(db, id)
+            .then(() => {
+                res.status(204).end()
+            })
+            .catch(next)
+    })
 
 
 module.exports = notesRouter
