@@ -163,13 +163,12 @@ describe('notes-router Endpoints', function() {
                 })
         })
         context('POST /api/notes', () => {
-            //broken
             it('creates a note, responding with 201 and the new note', () => {
                 this.retries(3)
                 const newNote = {
                     name: 'a note',
                     content: 'clean some things',
-                    folder_id: 2, 
+                    folderId: 2, 
                     modified: new Date()
                 }
                 return supertest(app)
@@ -179,7 +178,7 @@ describe('notes-router Endpoints', function() {
                     .expect(res => {
                         expect(res.body.name).to.eql(newNote.name)
                         expect(res.body.content).to.eql(newNote.content)
-                        expect(res.body.folderId).to.eql(newNote.folder_id)
+                        expect(res.body.folderId).to.eql(newNote.folderId)
                         expect(res.body).to.have.property('id')
                         expect(res.headers.location).to.eql(`/api/notes/${res.body.id}`)
                         const expected = new Date().toLocaleString()
@@ -192,12 +191,17 @@ describe('notes-router Endpoints', function() {
                             .expect(postRes.body)    
                     )
             })
-            //broken
             it('removes XSS attack content', () => {
-                const { maliciousNote,expectedNote } = makeMaliciousNote()
+                const { maliciousNote, expectedNote } = makeMaliciousNote()
+                const maliciousNoteAPI = {
+                    id: maliciousNote.id, 
+                    name: maliciousNote.name, 
+                    content: maliciousNote.content, 
+                    folderId: maliciousNote.folder_id
+                }                    
                 return supertest(app)
                     .post('/api/notes')
-                    .send(maliciousNote)
+                    .send(maliciousNoteAPI)
                     .expect(201)
                     .expect(res => {
                         expect(res.body.name).to.eql(expectedNote.name)

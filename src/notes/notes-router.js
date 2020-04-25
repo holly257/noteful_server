@@ -25,12 +25,11 @@ notesRouter
     })
     .post(jsonParser, (req, res, next) => {
         const db = req.app.get('db')
-        const { name, content, folderId: folder_id, modified } = req.body
-        const required = { name, content, folderId: req.body.folder_id}  
-        const newNote = { name, content, folder_id: req.body.folder_id, modified }
+        const { name, content, folder_id: folderId, modified } = req.body
+        const required = { name, content, folder_id: req.body.folderId}  
+        const newNote = { name, content, folder_id: req.body.folderId, modified }
 
         for(const [key, value] of Object.entries(required)) {
-            console.log(value)
             if (value ==  null) {
                 return res.status(400).json({
                     error: { message: `Missing ${key} in request body`}
@@ -47,6 +46,9 @@ notesRouter
             })
         .catch(next)
     })
+    // const { name, content, folderId: folder_id, modified } = req.body
+    // const required = { name, content, folderId: req.body.folder_id}  
+    // const newNote = { name, content, folder_id: req.body.folder_id, modified }
 
 
 notesRouter
