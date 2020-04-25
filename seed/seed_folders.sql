@@ -1,4 +1,4 @@
-INSERT INTO folders (folder_name)
+INSERT INTO folders (name)
     VALUES
         ('to-do'),
         ('class'),

@@ -42,10 +42,10 @@ describe('Notes Service object', function() {
                 .then(actual => {
                     expect(actual).to.eql({
                         id: thirdId,
-                        note_name: thirdTestNote.note_name,
-                        note_content: thirdTestNote.note_content,
+                        name: thirdTestNote.name,
+                        content: thirdTestNote.content,
                         folder_id: thirdTestNote.folder_id,
-                        date_mod: thirdTestNote.date_mod
+                        modified: thirdTestNote.modified
                     })
                 })
         })
@@ -61,10 +61,10 @@ describe('Notes Service object', function() {
         it(`updateNote() updates a note from the 'notes' table`, () => {
             const idOfNoteToUpate = 3
             const newNoteData = {
-                note_name: 'other note',
-                note_content: 'tasks and stuff',
+                name: 'other note',
+                content: 'tasks and stuff',
                 folder_id: 3, 
-                date_mod: new Date() 
+                modified: new Date() 
             }
             return NotesService.updateNote(db, idOfNoteToUpate, newNoteData)
                 .then(() => NotesService.getById(db, idOfNoteToUpate))
@@ -84,21 +84,22 @@ describe('Notes Service object', function() {
                     expect(actual).to.eql([])
                 })
         })
+        //broken
         it(`insertNote() inserts a new note and resolves the new note with an 'id'`, () => {
             const newNote = {
-                note_name: 'a note',
-                note_content: 'a task',
+                name: 'a note',
+                content: 'a task',
                 folder_id: 1, 
-                date_mod: new Date() 
+                modified: new Date() 
             }
             return NotesService.insertNote(db, newNote)
                 .then(actual => {
                     expect(actual).to.eql({
                         id: 1,
-                        note_name: newNote.note_name,
-                        note_content: newNote.note_content,
+                        name: newNote.name,
+                        content: newNote.content,
                         folder_id: newNote.folder_id,
-                        date_mod: newNote.date_mod
+                        modified: newNote.modified
                     })
                 })
         })

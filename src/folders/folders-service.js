@@ -15,10 +15,6 @@ const FoldersService = {
             .where('id', id).first()
     },
 
-    deleteFolder(db, id) {
-        return db('folders').where({ id }).delete()
-    },
-
     updateFolder(db, id, newFolderInfo) {
         return db('folders').where({ id }).update(newFolderInfo)
     },

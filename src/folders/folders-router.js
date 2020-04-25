@@ -7,7 +7,7 @@ const jsonParser = express.json()
 
 const sanitizeFolders = folders => ({
     id: folders.id,
-    name: xss(folders.folder_name),
+    name: xss(folders.name),
 })
 
 foldersRouter
@@ -22,7 +22,7 @@ foldersRouter
     })
     .post(jsonParser, (req, res, next) => {
         const { name } = req.body
-        const newFolder = { folder_name: name }
+        const newFolder = { name }
         const db = req.app.get('db')
 
         if(!name) {
@@ -60,24 +60,15 @@ foldersRouter
     .get((req, res, next) => {
         res.json(sanitizeFolders(res.folders))
     })
-    .delete((req, res, next) => {
-        const db = req.app.get('db')
-        const id = req.params.id
-        FoldersService.deleteFolder(db, id)
-            .then(() => {
-                res.status(204).end()
-            })
-        .catch(next)
-    })
     .patch(jsonParser, (req, res, next) => {
         const db = req.app.get('db')
         const id = req.params.id
-        const { folder_name } = req.body
-        const folderToUpdate = { folder_name }
+        const { name } = req.body
+        const folderToUpdate = { name }
 
-        if(!folder_name) {
+        if(!name) {
             return res.status(400).json({
-                error: { message: `Request body must contain folder_name`}
+                error: { message: `Request body must contain name`}
             })
         }
 

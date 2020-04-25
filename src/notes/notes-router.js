@@ -7,10 +7,10 @@ const jsonParser = express.json()
 
 const sanitizeNotes = notes => ({
     id: notes.id,
-    name: xss(notes.note_name),
-    content: xss(notes.note_content),
+    name: xss(notes.name),
+    content: xss(notes.content),
     folderId: notes.folder_id,
-    modified: notes.date_mod
+    modified: notes.modified
 })
 
 notesRouter
@@ -25,11 +25,12 @@ notesRouter
     })
     .post(jsonParser, (req, res, next) => {
         const db = req.app.get('db')
-        const { name, content, folderId, modified } = req.body
-        const required = { note_name: name, note_content: content, folder_id: folderId}  
-        const newNote = { note_name: name, note_content: content, folder_id: folderId, date_mod: modified }
+        const { name, content, folderId: folder_id, modified } = req.body
+        const required = { name, content, folderId: req.body.folder_id}  
+        const newNote = { name, content, folder_id: req.body.folder_id, modified }
 
         for(const [key, value] of Object.entries(required)) {
+            console.log(value)
             if (value ==  null) {
                 return res.status(400).json({
                     error: { message: `Missing ${key} in request body`}
@@ -79,13 +80,13 @@ notesRouter
     .patch(jsonParser, (req, res, next) => {
         const db = req.app.get('db')
         const id = req.params.id
-        const { note_name, note_content, folder_id, date_mod } = req.body
-        const updatedNote = { note_name, note_content, folder_id, date_mod }
+        const { name, content, folderId: folder_id, modified } = req.body
+        const updatedNote = { name, content, folderId: folder_id, modified }
 
         const numberOfValues = Object.values(updatedNote).filter(Boolean).length
         if(numberOfValues === 0) {
             return res.status(400).json({
-                error: { message: 'Request body must contain note_name and note_content'}
+                error: { message: 'Request body must contain name and content'}
             })
         }
 

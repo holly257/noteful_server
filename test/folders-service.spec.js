@@ -35,23 +35,14 @@ describe('Folders Service object', function() {
                 .then(actual => {
                     expect(actual).to.eql({
                         id: thirdId,
-                        folder_name: thirdTestFolder.folder_name,
+                        name: thirdTestFolder.name,
                     })
-                })
-        })
-        it(`deleteFolder() removes a folder by id from 'folders' table`, () => {
-            const folderId = 3
-            return FoldersService.deleteFolder(db, folderId)
-                .then(() => FoldersService.getAllFolders(db))
-                .then(allFolder => {
-                    const expected = testFolders.filter(folder => folder.id !== folderId)
-                    expect(allFolder).to.eql(expected)
                 })
         })
         it(`updateFolder() updates a folder from the 'folders' table`, () => {
             const idOfFolderToUpate = 3
             const newFolderData = {
-                folder_name: 'other folder'
+                name: 'other folder'
             }
             return FoldersService.updateFolder(db, idOfFolderToUpate, newFolderData)
                 .then(() => FoldersService.getById(db, idOfFolderToUpate))
@@ -74,13 +65,13 @@ describe('Folders Service object', function() {
 
         it(`insertFolder() inserts a new folder and resolves the new folder with an 'id'`, () => {
             const newFolder = { 
-                folder_name: 'a folder'
+                name: 'a folder'
             }
             return FoldersService.insertFolder(db, newFolder)
                 .then(actual => {
                     expect(actual).to.eql({
                         id: 1,
-                        folder_name: newFolder.folder_name
+                        name: newFolder.name
                     })
                 })
         })

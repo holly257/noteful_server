@@ -1,10 +1,7 @@
 const { expect } = require('chai')
 const knex = require('knex')
 const app = require('../src/app')
-const FoldersRouter = require('../src/folders/folders-router')
-const { makeTestFolders, makeTestFoldersNoID, makeMaliciousFolder } = require('./makeTestData')
-
-//take out the .only
+const { makeTestFolders, makeMaliciousFolder } = require('./makeTestData')
 
 describe('folders-router Endpoints', function() {
     let db
@@ -39,23 +36,11 @@ describe('folders-router Endpoints', function() {
                     .expect(200, expectedFolder)
             })
         })
-        it('DELETE /api/folders/:id responds with 204 and removes the folder', () => {
-            const idToDel = 2
-            const expectedFolders = testFolders.filter(folder => folder.id !== idToDel)
-            return supertest(app)
-                .delete(`/api/folders/${idToDel}`)
-                .expect(204)
-                .then(res => 
-                    supertest(app)
-                        .get('/api/folders')
-                        .expect(expectedFolders)    
-                )
-        })
         context('PATCH /api/folders/:id', () => {
             it('responds with 204 and updates the folder', () => {
                 const folderID = 2
                 const updatedFolder = {
-                    folder_name: 'a whole new name'
+                    name: 'a whole new name'
                 }
                 const expectedFolder = {
                     ...testFolders[folderID - 1],
@@ -77,7 +62,7 @@ describe('folders-router Endpoints', function() {
                     .patch(`/api/folders/${idToUpdate}`)
                     .send({ irrelevant: 'thing' })
                     .expect(400, {
-                        error: { message: `Request body must contain folder_name`}
+                        error: { message: `Request body must contain name`}
                     })
             })
         })
@@ -91,7 +76,7 @@ describe('folders-router Endpoints', function() {
                     .get('/api/folders')
                     .expect(200)
                     .expect(res => {
-                        expect(res.body[3].folder_name).to.eql(expectedFolder.folder_name)
+                        expect(res.body[3].name).to.eql(expectedFolder.name)
                     })
             })
             it('GET /api/folders/:id removes XSS attack content', () => {
@@ -99,7 +84,7 @@ describe('folders-router Endpoints', function() {
                     .get(`/api/folders/${maliciousFolder.id}`)
                     .expect(200)
                     .expect(res => {
-                        expect(res.body.folder_name).to.eql(expectedFolder.folder_name)
+                        expect(res.body.name).to.eql(expectedFolder.name)
                     })
             })
         })
@@ -128,14 +113,14 @@ describe('folders-router Endpoints', function() {
         context('POST /api/folders', () => {
             it('creates a folder, responding with 201 and the new folder', () => {
                 const newFolder = {
-                    folder_name: 'hello'
+                    name: 'hello'
                 }
                 return supertest(app)
                     .post('/api/folders')
                     .send(newFolder)
                     .expect(201)
                     .expect(res => {
-                        expect(res.body.folder_name).to.eql(newFolder.folder_name)
+                        expect(res.body.name).to.eql(newFolder.name)
                         expect(res.body).to.have.property('id')
                         expect(res.headers.location).to.eql(`/api/folders/${res.body.id}`)
                     })
@@ -145,7 +130,7 @@ describe('folders-router Endpoints', function() {
                             .expect(postRes.body)    
                     )
             })
-            it('responds with 400 and an error when the folder_name is missing', () => {
+            it('responds with 400 and an error when the name is missing', () => {
                 return supertest(app)
                     .post(`/api/folders`)
                     .send('')
@@ -160,17 +145,9 @@ describe('folders-router Endpoints', function() {
                     .send(maliciousFolder)
                     .expect(201)
                     .expect(res => {
-                        expect(res.body.folder_name).to.eql(expectedFolder.folder_name)
+                        expect(res.body.name).to.eql(expectedFolder.name)
                     })
             })
-        })
-        it('DELETE /api/folders/:id responds with 404', () => {
-            const idToDel = 2
-            return supertest(app)
-                .delete(`/api/folders/${idToDel}`)
-                .expect(404, 
-                    { error: { message: 'Folder does not exist'}}
-                )
         })
         it('PATCH /api/folders/:id responds with 404', () => {
             const folderID = 2
